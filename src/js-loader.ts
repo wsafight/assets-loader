@@ -1,5 +1,5 @@
 import loadjs from "loadjs"
-import { invariant } from "./utils"
+import { getPrefixUrl, invariant } from "./utils"
 
 export interface JsAssets {
     name: string
@@ -31,41 +31,25 @@ export const addJsAssets = (assets: JsAssets): boolean => {
 /**
  * Can't use CDN URL
  */
-const badUrlPrefixCache: string[] = []
-
-
+const badUrlPrefixCache: Set<string> = new Set();
 
 const onJsLoaded = (urls: string[], success: boolean) => {
-    if (success && !badUrlPrefixCache.length) {
+    if (!success) {
+        urls.forEach(url => badUrlPrefixCache.add(getPrefixUrl(url)))
         return
     }
-    urls.forEach(url => {
-        const prefixUrl: string = url.substring(0, url.indexOf('/', 3) + 1)
-        if (success) {
-            const index = badUrlPrefixCache.findIndex(badUrl => prefixUrl === badUrl)
-            if (index > - 1) {
-                badUrlPrefixCache.splice(index, 1)
-            }
-        } else if (badUrlPrefixCache.includes(prefixUrl)) {
-            badUrlPrefixCache.push(prefixUrl)
-        }
-    })
+    if (!badUrlPrefixCache.size) {
+        return
+    }
+    urls.forEach(url => badUrlPrefixCache.delete(getPrefixUrl(url)))
 }
 
 const resloveJsUrl = (jsAssets: JsAssets): string => {
     const allUrls = (jsAssets || {}).loadUrls || []
-    if (!badUrlPrefixCache.length) {
+    if (!badUrlPrefixCache.size) {
         return allUrls[0] || ''
     }
-    let canUseUrl = ''
-    allUrls.some(url => {
-        if (badUrlPrefixCache.some(badUrlPrefix => url.startsWith(badUrlPrefix))) {
-            return false
-        }
-        canUseUrl = url
-        return true
-    })
-    return canUseUrl
+    return allUrls.find(url => !badUrlPrefixCache.has(getPrefixUrl(url))) || ''
 }
 
 export const isJsAssets = (item: any): item is JsAssets => {
@@ -89,6 +73,7 @@ export const loadJs = (jsAssets: string | string[] | JsAssets) => {
         isAssetsList = false
     }
     const notFound = jsAssets.find(x => !cacheJsAssets[x])
+
     invariant(!!notFound, `Cannot found assets ${notFound}`)
 
     const loadItems: LoadAssetsItem[] = jsAssets.map(name => {
@@ -108,25 +93,38 @@ export const loadJs = (jsAssets: string | string[] | JsAssets) => {
     }
 
     return new Promise((resolve, reject) => {
-        const urlsToLoad: string[] = needLoadItems.map(x => x.url) as string[]
-        loadjs(urlsToLoad, {
-            success: () => {
-                needLoadItems.forEach(item => {
-                    if (!item.jsAssets?.ready) {
-                        return
-                    }
-                    item.jsAssets.ready.apply(item.jsAssets)
-                    item.result = item.jsAssets.wrapper()
-                })
-                const result = isAssetsList ? loadItems.map(item => item.result) : loadItems[0].result
-                resolve(result)
-                onJsLoaded(urlsToLoad, true)
-            },
-            error: (urls: string[]) => {
-                onJsLoaded(urls, false)
-                reject(new Error('loadJs Error'))
+        const startLoad = (urls: string[]) => loadjs(urls, { returnPromise: true }).then(() => {
+            needLoadItems.forEach(item => {
+                if (!item.jsAssets?.ready) {
+                    return
+                }
+                item.jsAssets.ready.apply(item.jsAssets)
+                item.result = item.jsAssets.wrapper()
+            })
+            const result = isAssetsList ? loadItems.map(item => item.result) : loadItems[0].result
+            resolve(result)
+            onJsLoaded(urlsToLoad, true)
+        }).catch((failUrls: string[]) => {
+            onJsLoaded(failUrls, false)
+            const retryUrl: string[] = []
+            for (let i = 0, len = failUrls.length; i <  len; i++) {
+                const failUrl = failUrls[i]
+                const failItem = needLoadItems.find(item => item.url === failUrl)
+                if (!failItem || !failItem.jsAssets) {
+                    return
+                }
+                const newUrl = resloveJsUrl(failItem.jsAssets)
+                if (!newUrl) {
+                    reject(new Error(`Cannot load assets ${failItem.jsAssets.name} ${newUrl}`))
+                    return
+                }
+                retryUrl.push(newUrl)
             }
+            startLoad(retryUrl)
         })
+
+        const urlsToLoad: string[] = needLoadItems.map(x => x.url) as string[]
+        startLoad(urlsToLoad)
     })
 
 }
