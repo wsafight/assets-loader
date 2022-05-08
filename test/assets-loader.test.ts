@@ -1,11 +1,15 @@
 import {addJsAssets} from "../src";
 
 
-// test('sumPromise', () => {
-//   const memoizeed = memoizee<any>(sumPromise, {manual: true})
-//   memoizeed(1, 2)
-//   expect(memoizeed.get?.('1,2')).toEqual(Promise.resolve(3))
-// })
+
+test('sumPromise', () => {
+  const result = addJsAssets({
+      name: 'test',
+      loadUrls: ['123.js'],
+      wrapper: () => void 0
+  })
+  expect(result).toEqual(true)
+})
 
 // test('sumPromise', () => {
 //   const memoizeed = memoizee<any>(sumPromise)
