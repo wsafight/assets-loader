@@ -8,3 +8,6 @@
         throw new Error(errorMsg);
     }
 }
+
+
+export const getPrefixUrl = (url: string): string => url.substring(0, url.indexOf('/', 3) + 1)
