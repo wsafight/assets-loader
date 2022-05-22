@@ -9,10 +9,23 @@
     }
 }
 
-
+/**
+ * Get the website information of CDN
+ * '//cdn.bootcdn.net/ajax/libs/vue/3.2.33/vue.runtime.esm-browser.js' => 'cdn.bootcdn.net'
+ * @param url 
+ * @returns 
+ */
 export const getPrefixUrl = (url: string): string => url.substring(0, url.indexOf('/', 3) + 1)
 
-
+/**
+ * Gets the object on the global variable
+ * vue => window.Vue
+ * @param umdName 
+ * @returns 
+ */
 export const getWrapperDataFromGlobal = (umdName: string) => {
+    if (!umdName) {
+        return undefined;
+    }
     return (globalThis as Record<string, any>)[umdName];
 }

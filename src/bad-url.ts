@@ -1,10 +1,16 @@
 /**
- * Can't use CDN URL
+ * Can't use URL
  */
-
 import { getPrefixUrl } from "./utils";
 
+/**
+ * TODO: Add another strategy
+ */
+
 class BadUrlPrefixCache {
+    /**
+     * Cache problematic URLs
+     */
     private readonly urlPrefixCache = new Set<string>()
     
     static badUrlPrefixCache: BadUrlPrefixCache | null = null
@@ -25,6 +31,9 @@ class BadUrlPrefixCache {
     }
 
     delete = (url: string) => {
+        if (this.isEmpty()) {
+            return
+        }
         this.urlPrefixCache.delete(getPrefixUrl(url))
     }
 

@@ -2,10 +2,21 @@ import loadjs from "loadjs"
 import BadUrlPrefixCache from './bad-url'
 
 export interface ModuleAssets {
+    /** assets name,For caching */
     name: string
+    /** multiple load urls for easy switch failure */
     loadUrls: string[]
-    wrapper?: string;
+    /** global variable name */
+    wrapper?: string
+    /** do something else before getting it */
     ready?: () => void
+}
+
+export interface LoadModuleItem {
+    // currently loaded url
+    url?: string
+    // module assets
+    moduleAssets?: ModuleAssets
 }
 
 const badUrlPrefixCache = BadUrlPrefixCache.getInstance()
@@ -15,49 +26,45 @@ export const resloveCanUseUrl = (moduleAssets: ModuleAssets): string => {
     return badUrlPrefixCache.getCanUseUrl(allUrls)
 }
 
-
-const onModuleLoaded = (urls: string[], success: boolean) => {
-    if (!success) {
-        urls.forEach(url => BadUrlPrefixCache.getInstance().add(url))
-        return
-    }
-    if (badUrlPrefixCache.isEmpty()) {
-        return
-    }
-    urls.forEach(url => badUrlPrefixCache.delete(url))
-}
-
-export interface LoadModuleItem {
-    url?: string
-    moduleAssets?: ModuleAssets
-}
-
 export const isModuleAssets = (item: any): item is ModuleAssets => {
     return 'name' in item && 'loadUrls' in item
 }
 
+/**
+ * 
+ * @param needLoadItems 
+ * @returns 
+ */
 export const moduleRetryLoad = (needLoadItems: LoadModuleItem[]) => {
     return new Promise((resolve, reject) => {
         const startLoad = (urls: string[]) => loadjs(urls, { returnPromise: true }).then(() => {
-            onModuleLoaded(urlsToLoad, true)
+            // Remove bad urls after success
+            urls.forEach(url => badUrlPrefixCache.delete(url))
             resolve('success')
         }).catch((failUrls: string[]) => {
-            onModuleLoaded(failUrls, false)
-            const retryUrl: string[] = []
+            // add bad urls after failure
+            urls.forEach(url => BadUrlPrefixCache.getInstance().add(url))
+            
+            
+            const retryUrls: string[] = []
             for (let i = 0, len = failUrls.length; i <  len; i++) {
                 const failUrl = failUrls[i]
+                // find module that fail to load and check for alternative urls
                 const failItem = needLoadItems.find(item => item.url === failUrl)
                 if (!failItem || !failItem.moduleAssets) {
                     return
                 }
                 const newUrl = resloveCanUseUrl(failItem.moduleAssets)
+                // there is no url that can be replaced, and an error is reported directly
                 if (!newUrl) {
                     reject(new Error(`Cannot load assets ${failItem.moduleAssets.name} ${newUrl}`))
                     return
                 }
-                retryUrl.push(newUrl)
+                retryUrls.push(newUrl)
             }
-            startLoad(retryUrl)
+
+            // retry until successful or all urls fail
+            startLoad(retryUrls)
         })
 
         const urlsToLoad: string[] = needLoadItems.map(x => x.url) as string[]
