@@ -3,6 +3,9 @@ import { moduleRetryLoad } from './module-retry-load'
 /**
  * TODO: check if css resource is loaded
  */
+export const cssIsExist = () => {
+
+}
 
 export interface CssModule {
     name: string
@@ -18,7 +21,8 @@ export const loadCssAssets = (cssAssets: string | string[]) => {
     if (typeof cssAssets === 'string') {
         cssAssets = [cssAssets]
     }
-    cssAssets.map(item => item.startsWith('css!') ? item : `css!${item}`)
+    // cast to css assets
+    cssAssets = cssAssets.map(item => item.startsWith('css!') ? item : `css!${item}`)
     return moduleRetryLoad(cssAssets.map(url => {
         return {
             url,
@@ -26,6 +30,7 @@ export const loadCssAssets = (cssAssets: string | string[]) => {
                 name: '',
                 loadUrls: [url],
             }
+
         }
     }))
 }
