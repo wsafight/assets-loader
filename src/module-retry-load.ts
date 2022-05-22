@@ -6,8 +6,6 @@ export interface ModuleAssets {
     name: string
     /** multiple load urls for easy switch failure */
     loadUrls: string[]
-    /** global variable name */
-    wrapper?: string
     /** do something else before getting it */
     ready?: () => void
 }

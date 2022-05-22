@@ -2,7 +2,6 @@ import { isModuleAssets, LoadModuleItem, ModuleAssets, moduleRetryLoad, resloveC
 import { getWrapperDataFromGlobal, invariant } from "./utils"
 
 export interface JsModule extends ModuleAssets {
-    wrapper: string;
     ready?: () => void
 }
 
@@ -11,11 +10,10 @@ const cacheJsModules: Record<string, JsModule> = {}
 export const addJsModule = (module: JsModule): boolean => {
     invariant(!module, 'module cannot empty')
 
-    const { name, loadUrls, wrapper } = module
+    const { name, loadUrls } = module
 
     invariant(!name, 'module name cannot empty')
     invariant(!Array.isArray(loadUrls) || !loadUrls.length, 'module loadUrls cannot empty')
-    invariant(!wrapper, 'module wrapper cannot empty')
 
     if (cacheJsModules[name]) {
         return false
@@ -47,10 +45,12 @@ export const loadJsModule = (jsAssets: string | string[] | JsModule) => {
     const loadItems: JsLoadModuleItem[] = jsAssets.map(name => {
         const assets = cacheJsModules[name]
 
-        const item: JsLoadModuleItem = { result: getWrapperDataFromGlobal(assets.wrapper) }
+        const item: JsLoadModuleItem = { 
+            moduleAssets: assets,
+            result: getWrapperDataFromGlobal(name)
+        }
         if (!item.result) {
             item.url = resloveCanUseUrl(assets)
-            item.moduleAssets = assets
         }
         return item
     })
@@ -63,11 +63,12 @@ export const loadJsModule = (jsAssets: string | string[] | JsModule) => {
 
     return moduleRetryLoad(needLoadItems).then(() => {
         needLoadItems.forEach(item => {
-            item.result = getWrapperDataFromGlobal(item.moduleAssets.wrapper!)
             if (!item.moduleAssets.ready) {
+                item.result = getWrapperDataFromGlobal(item.moduleAssets.name)
                 return
             }
             item.moduleAssets.ready.apply(item.moduleAssets)
+            item.result = getWrapperDataFromGlobal(item.moduleAssets.name)
         })
         const result = isAssetsList ? loadItems.map(item => item.result) : loadItems[0].result
         return result
