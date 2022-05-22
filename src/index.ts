@@ -1,6 +1,8 @@
-import { addJsAssets, loadJs } from "./js-loader"
+import { addJsModule, loadJsModule } from "./js-module-loader"
+import { loadCssAssets } from "./css-loader"
 
 export {
-    addJsAssets,
-    loadJs
+    addJsModule,
+    loadJsModule,
+    loadCssAssets,
 }

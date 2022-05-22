@@ -1,12 +1,12 @@
-import {addJsAssets} from "../src";
+import {addJsModule} from "../src";
 
 
 
 test('sumPromise', () => {
-  const result = addJsAssets({
+  const result = addJsModule({
       name: 'test',
       loadUrls: ['123.js'],
-      wrapper: () => void 0
+      wrapper: ''
   })
   expect(result).toEqual(true)
 })

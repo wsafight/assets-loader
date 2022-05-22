@@ -11,3 +11,8 @@
 
 
 export const getPrefixUrl = (url: string): string => url.substring(0, url.indexOf('/', 3) + 1)
+
+
+export const getWrapperDataFromGlobal = (umdName: string) => {
+    return (globalThis as Record<string, any>)[umdName];
+}
