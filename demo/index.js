@@ -1,4 +1,4 @@
-import { addJsModule, loadJsModule, loadCssAssets } from 'static-assets-loader';
+import { addJsModule, loadJsModule } from 'static-assets-loader';
 
 // 添加需要动态加载的 js 模块,通常是一个完整的 js
 addJsModule({
@@ -14,6 +14,7 @@ addJsModule({
     ],
 })
 
+
 addJsModule({
     name: 'flowchart',
     loadUrls: [
@@ -21,36 +22,55 @@ addJsModule({
     ],
 })
 
-// 只会加载在一次而不是多次,返回数组
-loadJsModule(['flowchart']).then(res => {
-    console.log(res);
-})
-
 // 只会加载在一次而不是多次，返回单个数据
+console.time('load flowchart')
 loadJsModule('flowchart').then(res => {
-    console.log(res);
+    console.timeEnd('load flowchart')
+    const current = document.createElement('div')
+    current.innerHTML = `flowchart 加载完成,80 ms 左右`
+    document.body.appendChild(current) 
 })
 
-// 如果可以，也可以直接传递 module，但是 flowchart 已经加载过了，也不回家中
-loadJsModule({
-    name: 'flowchart',
-    loadUrls: [
-        '//cdnjs.cloudflare.com/ajax/libs/flowchart/1.17.1/flowchart.min.js'
-    ],
-}).then(res => {
-    console.log(res);
-})
+// 只会加载在一次而不是多次,返回数组,这里是异步的，没做状态处理。同一时间判断数据会产生多次请求
+// TODO 添加内部状态，以便即使同一时间加载也不会产生多次请求
+setTimeout(() => {
+    console.time('load flowchart2')
+    loadJsModule(['flowchart']).then(res => {
+        console.timeEnd('load flowchart2')
+        const current = document.createElement('div')
+        current.innerHTML = 'flowchart 再次加载完成， 0.07 ms -> 0.2 ms'
+        document.body.appendChild(current)
+    })
+}, 1000)
+
+
+
+setTimeout(() => {
+    // 如果可以，也可以直接传递 module，但是 flowchart 已经加载过了，也不会继续加载
+    // TODO 研究会根据版本进行卸载从新开始加载
+    loadJsModule({
+        name: 'flowchart',
+        loadUrls: [
+            '//cdnjs.cloudflare.com/ajax/libs/flowchart/1.17.1/flowchart.min.js'
+        ],
+    }).then(res => {
+        console.log(res);
+    })
+}, 2000)
+
+
 
 
 addJsModule({
     name: 'React',
     loadUrls: [
-        'https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0-next-6e2f38f3a-20220519/umd/react.production.min.js'
+        // 如果当前请求失败，会认为整个 CDN 已经损坏 cdnjs.cloudflare.com 均不会请求，后续 ReactDOM 直接失败。
+        '//cdnjs.cloudflare.com/ajax/libs/react/18.2.0-next-6e2f38f3a-20220519/umd/react.production.min.js'
     ],
 })
 
 addJsModule({
-    // 错误，无法解析
+    // 错误，无法解析，因为加载完成后也获取不到 window['ReactDom']
     // name: 'ReactDom',
     name: 'ReactDOM',
     loadUrls: [
@@ -58,8 +78,13 @@ addJsModule({
     ],
 })
 
-const ReactBundle = ['React', 'ReactDom'];
+const ReactBundle = ['React', 'ReactDOM'];
 
+console.time('load ReactBundle')
 loadJsModule(ReactBundle).then(res => {
     console.log(res);
+    console.timeEnd('load ReactBundle')
+    const current = document.createElement('div')
+    current.innerHTML = 'React 全家桶 加载完成, 80 ms 左右'
+    document.body.appendChild(current)
 })
