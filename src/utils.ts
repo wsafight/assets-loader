@@ -15,7 +15,17 @@
  * @param url 
  * @returns 
  */
-export const getPrefixUrl = (url: string): string => url.substring(0, url.indexOf('/', 3) + 1)
+export const getPrefixUrl = (url: string): string => {
+    if (!url) {
+        return ''
+    }
+    // https:// => 8
+    // http:// => 7
+    // // => 2
+    const removePrefixIndex = url.indexOf('//') + 2
+    // get all strings between the current index and the first following / as path
+    return url.substring(removePrefixIndex, url.indexOf('/', removePrefixIndex))
+}
 
 /**
  * Gets the object on the global variable
