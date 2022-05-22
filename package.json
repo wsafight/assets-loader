@@ -1,74 +1,72 @@
 {
-    "name": "assets-loader",
-    "version": "0.0.1",
-    "description": "assert loader",
-    "author": "jump-jump <984292420@qq.com>",
-    "keywords": [
-      "retry",
-      "assets",
-      "caching",
-      "memory",
-      "js",
-      "loadjs"
-    ],
-    "scripts": {
-      "start": "tsdx watch",
-      "build": "tsdx build",
-      "test": "tsdx test",
-      "lint": "tsdx lint",
-      "prepare": "tsdx build",
-      "size": "size-limit",
-      "analyze": "size-limit --why"
+  "name": "static-assets-loader",
+  "version": "0.0.1",
+  "description": "assert loader",
+  "author": "jump-jump <984292420@qq.com>",
+  "keywords": [
+    "retry",
+    "assets",
+    "caching",
+    "memory",
+    "js",
+    "loadjs"
+  ],
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wsafight/assets-loader.git"
+  },
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "module": "dist/assets-loader.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/assets-loader.cjs.production.min.js",
+      "limit": "10 KB"
     },
-    "repository": {
-      "type": "git",
-      "url": "git://github.com/wsafight/assets-loader.git"
-    },
-    "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
-    "files": [
-      "dist",
-      "src"
-    ],
-    "engines": {
-      "node": ">=10"
-    },
-    "peerDependencies": {},
-    "husky": {
-      "hooks": {
-        "pre-commit": "tsdx lint"
-      }
-    },
-    "prettier": {
-      "printWidth": 80,
-      "semi": true,
-      "singleQuote": true,
-      "trailingComma": "es5"
-    },
-  
-    "module": "dist/assets-loader.esm.js",
-    "size-limit": [
-      {
-        "path": "dist/assets-loader.cjs.production.min.js",
-        "limit": "10 KB"
-      },
-      {
-        "path": "dist/assets-loader.esm.js",
-        "limit": "10 KB"
-      }
-    ],
-    "dependencies": {
-      "loadjs": "^4.2.0"
-    },
-    "devDependencies": {
-      "@types/loadjs": "^4.0.1",
-      "@size-limit/preset-small-lib": "^7.0.8",
-      "husky": "^7.0.4",
-      "size-limit": "^7.0.8",
-      "tsdx": "^0.14.1",
-      "tslib": "^2.4.0",
-      "typescript": "^4.6.4"
-    },
-    "license": "MIT"
-  }
-  
+    {
+      "path": "dist/assets-loader.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "dependencies": {
+    "loadjs": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/loadjs": "^4.0.1",
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "husky": "^7.0.4",
+    "size-limit": "^7.0.8",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4"
+  },
+  "license": "MIT"
+}

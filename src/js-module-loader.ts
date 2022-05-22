@@ -63,11 +63,11 @@ export const loadJsModule = (jsAssets: string | string[] | JsModule) => {
 
     return moduleRetryLoad(needLoadItems).then(() => {
         needLoadItems.forEach(item => {
-            if (!item.moduleAssets?.ready) {
+            item.result = getWrapperDataFromGlobal(item.moduleAssets.wrapper!)
+            if (!item.moduleAssets.ready) {
                 return
             }
             item.moduleAssets.ready.apply(item.moduleAssets)
-            item.result = getWrapperDataFromGlobal(item.moduleAssets.wrapper!)
         })
         const result = isAssetsList ? loadItems.map(item => item.result) : loadItems[0].result
         return result

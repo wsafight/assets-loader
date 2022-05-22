@@ -16,7 +16,7 @@ export interface LoadModuleItem {
     // currently loaded url
     url?: string
     // module assets
-    moduleAssets?: ModuleAssets
+    moduleAssets: ModuleAssets
 }
 
 const badUrlPrefixCache = BadUrlPrefixCache.getInstance()
