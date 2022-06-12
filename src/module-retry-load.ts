@@ -19,7 +19,7 @@ export interface LoadModuleItem {
 }
 
 const badUrlPrefixCache = BadUrlPrefixCache.getInstance({
-    
+    strategy: 'localStorage',
 })
 
 export const resloveCanUseUrl = (moduleAssets: ModuleAssets): string => {

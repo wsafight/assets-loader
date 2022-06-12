@@ -65,3 +65,14 @@ export const hijackDeferredPromise = (): HijackDeferredPromiseResult => {
         reject
     }
 }
+
+export const getStorage = (strategy: string): Storage | null  => {
+    if (strategy === 'sessionStorage') {
+        return sessionStorage
+    }
+
+    if (strategy === 'localStorage') {
+        return localStorage
+    }
+    return null
+}

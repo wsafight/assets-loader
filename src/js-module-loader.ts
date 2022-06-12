@@ -54,12 +54,14 @@ export const startLoad = (jsAssets: string[], isAssetsList: boolean, time: numbe
 
     if (!currentNeedLoadItems.length) {
         deferred.resolve(isAssetsList ? loadItems.map(item => item.result) : loadItems[0].result)
+        return
     }
 
     const errIndex = currentNeedLoadItems.findIndex(item => item.moduleAssets.status === 'fail')
 
     if (errIndex > -1) {
         deferred.reject(`Cannot load assets ${currentNeedLoadItems[errIndex].moduleAssets.name}`)
+        return
     }
    
     const loadingItems = currentNeedLoadItems.filter(item => item.moduleAssets.status === 'loading')
@@ -67,6 +69,7 @@ export const startLoad = (jsAssets: string[], isAssetsList: boolean, time: numbe
     if (loadingItems.length === currentNeedLoadItems.length) {
         if (time > 10) {
             deferred.reject(`load assets overtime`)
+            return
         }
         setTimeout(() => {
             startLoad(jsAssets, isAssetsList, time + 1)
