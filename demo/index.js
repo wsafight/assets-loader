@@ -1,5 +1,25 @@
-import { addJsModule, loadJsModule } from 'static-assets-loader';
+import { addJsModule, loadJsModule, loadjs } from 'static-assets-loader';
 
+loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+
+loadjs('//unpkg.com/echarts@5.3.2/dist/echarts.min.js');
+loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+
+setTimeout(() => {
+    loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+
+    loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+    loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+}, 1000)
+
+setTimeout(() => {
+    loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+
+loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+loadjs('https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js');
+}, 2000);
 // 添加需要动态加载的 js 模块,通常是一个完整的 js
 addJsModule({
     // 模块名称（有特殊含义）

@@ -8,7 +8,7 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
-    "static-assets-loader": "0.0.7"
+    "static-assets-loader": "0.0.8"
   },
   "author": "",
   "license": "ISC"

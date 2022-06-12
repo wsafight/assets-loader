@@ -1,10 +1,10 @@
 lockfileVersion: 5.3
 
 specifiers:
-  static-assets-loader: 0.0.7
+  static-assets-loader: 0.0.8
 
 dependencies:
-  static-assets-loader: 0.0.7
+  static-assets-loader: 0.0.8
 
 packages:
 
@@ -12,8 +12,8 @@ packages:
     resolution: {integrity: sha512-AgQGZisAlTPbTEzrHPb6q+NYBMD+DP9uvGSIjSUM5uG+0jG15cb8axWpxuOIqrmQjn6scaaH8JwloiP27b2KXA==}
     dev: false
 
-  /static-assets-loader/0.0.7:
-    resolution: {integrity: sha512-NpF0k1wz94USZvhm1pTy+V6LWq24JtlNYiDpyMbucBl0wJhgaVQShOu1TV+C9xCt+eoOQikr3MiMC1881Mxsaw==}
+  /static-assets-loader/0.0.8:
+    resolution: {integrity: sha512-5HJmQ4drrQIwVMqG4Q8AOJB7U865CUjQhF04kCFPhhJdR9d3cGeW94JP9gU+ZbWOZEBHWm+kqbBWEqMUVpRB3g==}
     engines: {node: '>=10'}
     dependencies:
       loadjs: 4.2.0
