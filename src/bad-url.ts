@@ -39,7 +39,7 @@ class BadUrlPrefixCache {
 
     static resetInstance = (config: BadUrlPrefixOptions) => {
         BadUrlPrefixCache.badUrlPrefixCache = null
-        this.getInstance(config)
+        BadUrlPrefixCache.getInstance(config)
     }
 
     constructor(config: BadUrlPrefixOptions) {
