@@ -31,8 +31,10 @@ loadJsModule('flowchart').then(res => {
     document.body.appendChild(current) 
 })
 
+console.time('load flowchart 多次')
 loadJsModule(['flowchart']).then(res => {
-    console.timeEnd('load flowchart3')
+    console.log('xxx', res);
+    console.timeEnd('load flowchart 多次')
     const current = document.createElement('div')
     current.innerHTML = 'flowchart 多次加载完成'
     document.body.appendChild(current)

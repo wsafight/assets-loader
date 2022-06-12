@@ -51,10 +51,10 @@ interface HijackDeferredPromiseResult {
  * @returns {Promise<unknown>}
  */
 export const hijackDeferredPromise = (): HijackDeferredPromiseResult => {
-    let resolve; 
-    let reject;
+    let resolve: any; 
+    let reject: any;
 
-    const promise = new Promise((res, rej) => {
+    const promise = new Promise<any>((res, rej) => {
         resolve = res;
         reject = rej;
     });
