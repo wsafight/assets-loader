@@ -56,7 +56,7 @@ export const startLoad = (jsAssets: string[], isAssetsList: boolean, time: numbe
 
     const errIndex = currentNeedLoadItems.findIndex(item => item.moduleAssets.status === 'fail')
 
-    if (errIndex >= -1) {
+    if (errIndex > -1) {
         return Promise.reject(`Cannot load assets ${currentNeedLoadItems[errIndex].moduleAssets.name}`)
     }
    

@@ -31,6 +31,13 @@ loadJsModule('flowchart').then(res => {
     document.body.appendChild(current) 
 })
 
+loadJsModule(['flowchart']).then(res => {
+    console.timeEnd('load flowchart3')
+    const current = document.createElement('div')
+    current.innerHTML = 'flowchart 多次加载完成'
+    document.body.appendChild(current)
+})
+
 // 只会加载在一次而不是多次,返回数组,这里是异步的，没做状态处理。同一时间判断数据会产生多次请求
 // TODO 添加内部状态，以便即使同一时间加载也不会产生多次请求
 setTimeout(() => {
