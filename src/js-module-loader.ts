@@ -1,8 +1,14 @@
-import { isModuleAssets, LoadModuleItem, ModuleAssets, moduleRetryLoad, resloveCanUseUrl } from "./module-retry-load";
+import { 
+  isModuleAssets, 
+  LoadModuleItem, 
+  ModuleAssets, 
+  moduleRetryLoad, 
+  resloveCanUseUrl 
+} from "./module-retry-load";
 import { getWrapperDataFromGlobal, invariant } from "./utils"
 
 export interface JsModule extends ModuleAssets {
-    ready?: () => void
+   
 }
 
 const cacheJsModules: Record<string, JsModule> = {}
@@ -18,7 +24,7 @@ export const addJsModule = (module: JsModule): boolean => {
     if (cacheJsModules[name]) {
         return false
     }
-
+    module.status = 'ready'
     cacheJsModules[name] = module
     return true
 }
@@ -27,6 +33,67 @@ export const addJsModule = (module: JsModule): boolean => {
 interface JsLoadModuleItem extends LoadModuleItem {
     result: any
 }
+
+export const startLoad = (jsAssets: string[], isAssetsList: boolean, time: number = 1) => {
+    const loadItems: JsLoadModuleItem[] = jsAssets.map(name => {
+        const assets = cacheJsModules[name]
+
+        const item: JsLoadModuleItem = { 
+            moduleAssets: assets,
+            result: getWrapperDataFromGlobal(name)
+        }
+        if (!item.result) {
+            item.url = resloveCanUseUrl(assets)
+        }
+        return item
+    })
+
+    const currentNeedLoadItems = loadItems.filter(item => !item.result)
+
+    if (!currentNeedLoadItems.length) {
+        return Promise.resolve(isAssetsList ? loadItems.map(item => item.result) : loadItems[0].result)
+    }
+
+    const errIndex = currentNeedLoadItems.findIndex(item => item.moduleAssets.status === 'fail')
+
+    if (errIndex >= -1) {
+        return Promise.reject(`Cannot load assets ${currentNeedLoadItems[errIndex].moduleAssets.name}`)
+    }
+   
+    const loadingItems = currentNeedLoadItems.filter(item => item.moduleAssets.status === 'loading')
+
+    if (loadingItems.length === currentNeedLoadItems.length) {
+        if (time > 10) {
+            return Promise.reject(`load assets overtime`)
+        }
+        setTimeout(() => {
+            startLoad(jsAssets, isAssetsList, time + 1)
+        }, time * 100)
+    }
+
+    const needLoadItems = currentNeedLoadItems.filter(item => item.moduleAssets.status !== 'loading')
+    
+    needLoadItems.forEach(item => item.moduleAssets.status = 'loading')
+    
+    return moduleRetryLoad(needLoadItems).then(() => {
+        needLoadItems.forEach(item => {
+            item.moduleAssets.status = 'success'
+            if (!item.moduleAssets.ready) {
+                item.result = getWrapperDataFromGlobal(item.moduleAssets.name)
+                return
+            }
+            item.moduleAssets.ready.apply(item.moduleAssets)
+            item.result = getWrapperDataFromGlobal(item.moduleAssets.name)
+        })
+        if (loadingItems.length > 0) {
+            startLoad(jsAssets, isAssetsList, time + 1)
+            return  
+        }
+        const result = isAssetsList ? loadItems.map(item => item.result) : loadItems[0].result
+        return result
+    })
+}  
+
 
 export const loadJsModule = (jsAssets: string | string[] | JsModule) => {
     let isAssetsList = true
@@ -42,35 +109,5 @@ export const loadJsModule = (jsAssets: string | string[] | JsModule) => {
 
     invariant(!!notFound, `Cannot found assets ${notFound}`)
 
-    const loadItems: JsLoadModuleItem[] = jsAssets.map(name => {
-        const assets = cacheJsModules[name]
-
-        const item: JsLoadModuleItem = { 
-            moduleAssets: assets,
-            result: getWrapperDataFromGlobal(name)
-        }
-        if (!item.result) {
-            item.url = resloveCanUseUrl(assets)
-        }
-        return item
-    })
-
-    const needLoadItems = loadItems.filter(item => !item.result)
-
-    if (!needLoadItems.length) {
-        return Promise.resolve(isAssetsList ? loadItems.map(item => item.result) : loadItems[0].result)
-    }
-
-    return moduleRetryLoad(needLoadItems).then(() => {
-        needLoadItems.forEach(item => {
-            if (!item.moduleAssets.ready) {
-                item.result = getWrapperDataFromGlobal(item.moduleAssets.name)
-                return
-            }
-            item.moduleAssets.ready.apply(item.moduleAssets)
-            item.result = getWrapperDataFromGlobal(item.moduleAssets.name)
-        })
-        const result = isAssetsList ? loadItems.map(item => item.result) : loadItems[0].result
-        return result
-    })
+    startLoad(jsAssets, isAssetsList)
 }

@@ -8,6 +8,7 @@ export interface ModuleAssets {
     loadUrls: string[]
     /** do something else before getting it */
     ready?: () => void
+    status?: 'ready' | 'loading' | 'success' | 'fail'
 }
 
 export interface LoadModuleItem {
@@ -17,7 +18,9 @@ export interface LoadModuleItem {
     moduleAssets: ModuleAssets
 }
 
-const badUrlPrefixCache = BadUrlPrefixCache.getInstance()
+const badUrlPrefixCache = BadUrlPrefixCache.getInstance({
+    
+})
 
 export const resloveCanUseUrl = (moduleAssets: ModuleAssets): string => {
     const allUrls = (moduleAssets || {}).loadUrls || []
@@ -55,6 +58,7 @@ export const moduleRetryLoad = (needLoadItems: LoadModuleItem[]) => {
                 const newUrl = resloveCanUseUrl(failItem.moduleAssets)
                 // there is no url that can be replaced, and an error is reported directly
                 if (!newUrl) {
+                    failItem.moduleAssets.status = 'fail'
                     reject(new Error(`Cannot load assets ${failItem.moduleAssets.name} ${newUrl}`))
                     return
                 }

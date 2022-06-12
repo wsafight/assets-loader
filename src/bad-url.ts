@@ -3,27 +3,38 @@
  */
 import { getPrefixUrl } from "./utils";
 
-/**
- * TODO: Add another strategy
- */
+interface BadUrlPrefixOptions {
+    strategy?: 'memory' | 'localStorage'
+    maxAge?: number
+}
+
+const DEFAULT_MAX_AGE = 8 * (60 * 60) * 1000;
+
+const DEFAULT_OPTIONS: BadUrlPrefixOptions = {
+    strategy: 'memory',
+    maxAge: DEFAULT_MAX_AGE
+}
 
 class BadUrlPrefixCache {
     /**
      * Cache problematic URLs
      */
     private readonly urlPrefixCache = new Set<string>()
+
+    private readonly config: BadUrlPrefixOptions
     
     static badUrlPrefixCache: BadUrlPrefixCache | null = null
     
-    static getInstance (): BadUrlPrefixCache {
+    static getInstance (config: BadUrlPrefixOptions = {}): BadUrlPrefixCache {
         if (!BadUrlPrefixCache.badUrlPrefixCache) {
-            BadUrlPrefixCache.badUrlPrefixCache = new BadUrlPrefixCache()
+            BadUrlPrefixCache.badUrlPrefixCache = new BadUrlPrefixCache(config)
         }
         return BadUrlPrefixCache.badUrlPrefixCache
     }
 
-    constructor(config = {}) {
-        console.log(config)
+    constructor(config: BadUrlPrefixOptions = {}) {
+        this.config = Object.assign({}, DEFAULT_OPTIONS, config);
+        console.log(this.config)
     }
 
     add = (url: string) => {
