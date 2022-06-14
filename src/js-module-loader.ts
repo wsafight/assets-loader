@@ -36,7 +36,7 @@ interface JsLoadModuleItem extends LoadModuleItem {
     result: any
 }
 
-export const startLoad = (jsAssets: string[], isAssetsList: boolean, time: number = 1) => {
+const startLoad = (jsAssets: string[], isAssetsList: boolean, time: number = 1) => {
     const loadItems: JsLoadModuleItem[] = jsAssets.map(name => {
         const assets = cacheJsModules[name]
 

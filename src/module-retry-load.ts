@@ -8,7 +8,7 @@ export interface ModuleAssets {
     loadUrls: string[]
     /** do something else before getting it */
     ready?: () => void
-    status?: 'ready' | 'loading' | 'success' | 'fail'
+    status: 'ready' | 'loading' | 'success' | 'fail'
 }
 
 export interface LoadModuleItem {
@@ -38,7 +38,9 @@ export const isModuleAssets = (item: Record<string, any>): item is ModuleAssets 
  */
 export const moduleRetryLoad = (needLoadItems: LoadModuleItem[]) => {
     return new Promise((resolve, reject) => {
-        const startLoad = (urls: string[]) => loadjs(urls, { returnPromise: true }).then(() => {
+        const startLoad = (urls: string[]) => loadjs(urls, {
+            returnPromise: true
+        }).then(() => {
             // Remove bad urls after success
             urls.forEach(url => badUrlPrefixCache.delete(url))
             resolve('success')
