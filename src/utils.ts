@@ -5,7 +5,7 @@
  */
  export const invariant = (condition: boolean, errorMsg: string) => {
     if (condition) {
-        throw new Error(errorMsg);
+        throw new Error(errorMsg)
     }
 }
 
@@ -35,32 +35,32 @@ export const getPrefixUrl = (url: string): string => {
  */
 export const getWrapperDataFromGlobal = (umdName: string) => {
     if (!umdName || typeof umdName !== 'string') {
-        return null;
+        return null
     }
-    return (globalThis as Record<string, any>)[umdName];
+    return (globalThis as Record<string, any>)[umdName]
 }
 
-interface HijackDeferredPromiseResult<T> {
-    currentPromise: Promise<T>;
-    resolve: (value: T | PromiseLike<T>) => void;
+interface CreateDeferredPromiseResult<T> {
+    currentPromise: Promise<T>
+    resolve: (value: T | PromiseLike<T>) => void
     reject: (reason?: any) => void
 }
 
 
-type CreateDeferredPromise = <TValue>() => HijackDeferredPromiseResult<TValue>;
+type CreateDeferredPromise = <TValue>() => CreateDeferredPromiseResult<TValue>
 
 /**
  * 获取一个resolve 和reject在外面的promise对象
  * @returns {Promise<unknown>}
  */
 export const createDeferredPromise: CreateDeferredPromise = <T>() => {
-    let resolve!: (value: T | PromiseLike<T>) => void;
-    let reject!: (reason?: any) => void;
+    let resolve!: (value: T | PromiseLike<T>) => void
+    let reject!: (reason?: any) => void
 
     const promise = new Promise<T>((res, rej) => {
-        resolve = res;
-        reject = rej;
-    });
+        resolve = res
+        reject = rej
+    })
 
     return {
         currentPromise: promise,

@@ -1,4 +1,4 @@
-import {addJsModule} from "../src";
+import {addJsModule} from "../src"
 
 
 

@@ -1,7 +1,7 @@
 /**
  * Can't use URL
  */
-import { getPrefixUrl, getStorage } from "./utils";
+import { getPrefixUrl, getStorage } from "./utils"
 
 interface BadUrlPrefixOptions {
     storageKey?: string
@@ -143,4 +143,4 @@ export const setBadUrlPrefixCacheOptions = (options: BadUrlPrefixOptions) => {
     BadUrlPrefixCache.resetInstance(options)
 }
 
-export default BadUrlPrefixCache;
+export default BadUrlPrefixCache

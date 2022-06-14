@@ -46,7 +46,6 @@ export const moduleRetryLoad = (needLoadItems: LoadModuleItem[]) => {
             // add bad urls after failure
             urls.forEach(url => badUrlPrefixCache.add(url))
             
-            
             const retryUrls: string[] = []
             for (let i = 0, len = failUrls.length; i <  len; i++) {
                 const failUrl = failUrls[i]

@@ -4,7 +4,7 @@ import {
   ModuleAssets, 
   moduleRetryLoad, 
   resloveCanUseUrl 
-} from "./module-retry-load";
+} from "./module-retry-load"
 import { getWrapperDataFromGlobal, createDeferredPromise, invariant } from "./utils"
 
 export interface JsModule extends ModuleAssets {
