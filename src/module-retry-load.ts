@@ -27,7 +27,7 @@ export const resloveCanUseUrl = (moduleAssets: ModuleAssets): string => {
     return badUrlPrefixCache.getCanUseUrl(allUrls)
 }
 
-export const isModuleAssets = (item: any): item is ModuleAssets => {
+export const isModuleAssets = (item: Record<string, any>): item is ModuleAssets => {
     return 'name' in item && 'loadUrls' in item
 }
 

@@ -40,21 +40,24 @@ export const getWrapperDataFromGlobal = (umdName: string) => {
     return (globalThis as Record<string, any>)[umdName];
 }
 
-interface HijackDeferredPromiseResult {
-    currentPromise: Promise<any>;
-    resolve: Function;
-    reject: Function
+interface HijackDeferredPromiseResult<T> {
+    currentPromise: Promise<T>;
+    resolve: (value: T | PromiseLike<T>) => void;
+    reject: (reason?: any) => void
 }
+
+
+type CreateDeferredPromise = <TValue>() => HijackDeferredPromiseResult<TValue>;
 
 /**
  * 获取一个resolve 和reject在外面的promise对象
  * @returns {Promise<unknown>}
  */
-export const hijackDeferredPromise = (): HijackDeferredPromiseResult => {
-    let resolve: any; 
-    let reject: any;
+export const createDeferredPromise: CreateDeferredPromise = <T>() => {
+    let resolve!: (value: T | PromiseLike<T>) => void;
+    let reject!: (reason?: any) => void;
 
-    const promise = new Promise<any>((res, rej) => {
+    const promise = new Promise<T>((res, rej) => {
         resolve = res;
         reject = rej;
     });

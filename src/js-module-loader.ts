@@ -5,7 +5,7 @@ import {
   moduleRetryLoad, 
   resloveCanUseUrl 
 } from "./module-retry-load";
-import { getWrapperDataFromGlobal, hijackDeferredPromise, invariant } from "./utils"
+import { getWrapperDataFromGlobal, createDeferredPromise, invariant } from "./utils"
 
 export interface JsModule extends ModuleAssets {
    
@@ -13,7 +13,7 @@ export interface JsModule extends ModuleAssets {
 
 const cacheJsModules: Record<string, JsModule> = {}
 
-const deferred = hijackDeferredPromise()
+const deferred = createDeferredPromise()
 
 export const addJsModule = (module: JsModule): boolean => {
     invariant(!module, 'module cannot empty')
